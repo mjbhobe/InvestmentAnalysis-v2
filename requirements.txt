@@ -1,0 +1,24 @@
+# python packages needed
+pandas
+python-dotenv
+streamlit
+yfinance
+rich
+pyyaml
+tabulate
+bs4
+textblob
+
+# LLM APIs
+google-genai
+google-generativeai
+
+# agno & dependencies
+agno
+lancedb 
+tantivy 
+pypdf 
+duckduckgo-search
+
+
+
