@@ -33,8 +33,11 @@ prompts:
     - Title the output from the sentiment analysis agent as "Sentiment Analysis"
     - Then give your observations on the analysis done by the financial analysis agent
     - Follow that with your observations from the sentiment analysis given by the sentiment analysis agent
+    - Title each section appropriately, and center the section title
     - Highlight any risks you foresee
     - Close out with your overall recommendation, with reasons for the same.
+    - Title this closing section as "Overall Recommendation for {company name}"
+    - Ensure that you are not missing any data provided to you
 
 
 
