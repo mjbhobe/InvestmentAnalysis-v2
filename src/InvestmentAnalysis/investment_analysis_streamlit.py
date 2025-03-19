@@ -1,6 +1,8 @@
 import streamlit as st
+import yfinance as yf
 
 from agno.agent import RunResponse
+from agno.utils.log import logger
 from agents.investment_analysis_agent import investment_analysis_agent
 
 # Page configuration
@@ -34,6 +36,17 @@ if "analysis_generated" not in st.session_state:
     st.session_state.analysis_generated = False
 
 
+def is_valid_stock_symbol(symbol: str) -> bool:
+    try:
+        ticker = yf.Ticker(symbol.upper())
+        # try to get info, should raise exception if invalid
+        _ = ticker.info
+        return True
+    except Exception as e:
+        logger.fatal(f"ERROR: {symbol.upper()} is not a valid stock symbol.")
+        return False
+
+
 def generate_investment_analysis(symbol: str, agent):
     prompt = f"Generate investment analysis for {symbol}"
     # return agent.print_response(prompt, stream=True)
@@ -51,19 +64,27 @@ st.markdown(
     """
     This tool provides investment analysis for publicly traded companies and comes up with an overall
     recommendation on the long term investment potential.
-"""
-)
-
-st.markdown(
-    """
+    <br/>
     <div style='color: #777;'>     
     <small>   
     In this version we combine Financial analysis and sentiment analysis to come up with an overall
     recommendation on the long term investment potential of the company. </small>
     </div>
+    <p/>
 """,
     unsafe_allow_html=True,
 )
+
+# st.markdown(
+#     """
+#     <div style='color: #777;'>
+#     <small>
+#     In this version we combine Financial analysis and sentiment analysis to come up with an overall
+#     recommendation on the long term investment potential of the company. </small>
+#     </div>
+# """,
+#     unsafe_allow_html=True,
+# )
 
 # Stock symbol input
 with st.container():
@@ -80,7 +101,18 @@ with st.container():
 
 # Analysis section
 if analyze_button and stock_symbol:
+    # check if user has entered a valid stock symbol
+    if not is_valid_stock_symbol(stock_symbol):
+        st.markdown(
+            f"""<div style='color: red;'>
+            Invalid stock symbol: {stock_symbol.upper()}. Please enter valid symbol to proceed!
+            </div>""",
+            unsafe_allow_html=True,
+        )
+        st.stop()
+
     try:
+        stock_symbol = stock_symbol.upper()
         with st.spinner(f"Generating investment analysis for {stock_symbol}..."):
             analysis = generate_investment_analysis(
                 stock_symbol, investment_analysis_agent

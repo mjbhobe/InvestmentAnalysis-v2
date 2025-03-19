@@ -12,6 +12,7 @@ Code is meant to be used for educational purposes only!
 At no point is this code/to be used as a replacement for sound
 financial investment advise from a Financial expert.
 """
+
 import os
 from dotenv import load_dotenv
 from textwrap import dedent
@@ -29,7 +30,9 @@ from tools.sentiment_analysis_tools import SentimentAnalysisTools
 # Load environment variables and configure Gemini
 if os.environ.get("STREAMLIT_CLOUD"):
     # when deploying to streamlit, read from st.secrets
-    logger.debug("Detected that I am running in Streamlit cloud. Fetching API ket from st.secrets()")
+    logger.debug(
+        "Detected that I am running in Streamlit cloud. Fetching API key from st.secrets()"
+    )
     os.environ["GOOGLE_API_KEY"] = st.secrets("GOOGLE_API_KEY")
 else:
     # running locally - load from .env file
@@ -37,7 +40,9 @@ else:
     load_dotenv()
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-config_file_path = pathlib.Path(__file__).parent.parent / "config/sentiment_analysis_prompts.yaml"
+config_file_path = (
+    pathlib.Path(__file__).parent.parent / "config/sentiment_analysis_prompts.yaml"
+)
 assert (
     config_file_path.exists()
 ), f"FATAL ERROR: configuration file {config_file_path} does not exist!"
@@ -58,11 +63,13 @@ sentiment_analysis_agent = Agent(
     name="Sentiment Analysis Agent",
     model=Gemini(id="gemini-2.0-flash"),
     tools=[SentimentAnalysisTools()],
-    goal=dedent("""
+    goal=dedent(
+        """
         Analyse latest company market news and determine the the overall market sentiment, 
         which will serve as an input for a recommendation of the long term investment potential 
         of the company.
-    """),
+    """
+    ),
     description=dedent(config["prompts"]["system_prompt"]),
     instructions=dedent(config["prompts"]["sentiment_analysis_prompt"]),
     expected_output=dedent(config["prompts"]["expected_output_format"]),
@@ -70,4 +77,3 @@ sentiment_analysis_agent = Agent(
     show_tool_calls=True,
     debug_mode=True,
 )
-

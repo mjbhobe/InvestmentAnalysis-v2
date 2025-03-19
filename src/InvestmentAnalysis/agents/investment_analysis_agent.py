@@ -12,6 +12,7 @@ Code is meant to be used for educational purposes only!
 At no point is this code/to be used as a replacement for sound
 financial investment advise from a Financial expert.
 """
+
 import os
 from dotenv import load_dotenv
 from textwrap import dedent
@@ -36,7 +37,9 @@ else:
     load_dotenv()
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-config_file_path = pathlib.Path(__file__).parent.parent / "config/investment_analysis_prompts.yaml"
+config_file_path = (
+    pathlib.Path(__file__).parent.parent / "config/investment_analysis_prompts.yaml"
+)
 assert (
     config_file_path.exists()
 ), f"FATAL ERROR: configuration file {config_file_path} does not exist!"
@@ -57,13 +60,16 @@ investment_analysis_agent = Agent(
     name="Investment Analysis Agent",
     model=Gemini(id="gemini-2.0-flash"),
     team=[financial_analysis_agent, sentiment_analysis_agent],
-    goal=dedent("""
+    goal=dedent(
+        """
         Based on the financial analysis, sentiment analysis 
         come up with an overall recommendation for the long term investment potential
         of a company to potential investors.
-    """),
+    """
+    ),
     description=dedent(config["prompts"]["system_prompt"]),
     instructions=dedent(config["prompts"]["investment_analysis_instructions"]),
+    expected_output=dedent(config["prompts"]["expected_output_format"]),
     markdown=True,
     show_tool_calls=True,
     debug_mode=True,
